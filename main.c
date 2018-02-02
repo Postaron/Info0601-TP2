@@ -1,64 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
-#include <ncurses.h>
-#include "ncurses.h"
+#include <fcntl.h>
+#include <errno.h>
 
-#define HAUTEUR 10
-#define LARGEUR 20
-
-int main(void)
+int main(int argc, char *argv[])
 {
-	WINDOW *fenetre = NULL;
-	int ch, err, sourisX, sourisY, bouton;
-	char message[] = "Bonjour";
-	/* Initialisation de ncurses */
-	ncurses_initialiser();
-	ncurses_souris();
-	scrollok(stdscr, TRUE);
-	ncurses_couleurs();
-	printw("Pressez F2 pour quitter le programme. Utilisez les flèches pour déplacer le curseur.\n");
-	move(LINES / 2, COLS / 2 - strlen(message));
-	refresh();
-	printw(message);
-	/* Routine principale */
-	while ((ch = getch()) != KEY_F(2))
-	{
+    int fd;
+    if (argc != 2)
+    {
+        fprintf(stderr, "Pas assez d'argument : un nom de fichier " st nécessaire.\n);
+        exit(EXIT_FAILURE);
+        it(EXIT_FAILURE);
+    }
+    if ((fd = open(argv[1], O_RDONLY, S_IRUSR)) == -1)
+    {
+        perror("Erreur ouverture du fichier : ");
+        exit(EXIT_FAILURE);
+    }
+    printf("Le fichier existe !\n");
+    if (close(fd) == -1)
+    {
+        perror("Erreur lors de la fermeture du fichier : ");
+        exit(EXIT_FAILURE);
+    }
 
-		switch (ch)
-		{
-		case KEY_MOUSE:
-			if (souris_getpos(&sourisX, &sourisY, &bouton) == OK)
-			{
-			}
-			break;
-		case '1':
-			attroff(COLOR_PAIR(2));
-			attroff(COLOR_PAIR(3));
-			attron(COLOR_PAIR(1));
-			break;
-		case '2':
-			attroff(COLOR_PAIR(1));
-			attroff(COLOR_PAIR(3));
-			attron(COLOR_PAIR(2));
-			break;
-		case '3':
-			attroff(COLOR_PAIR(2));
-			attroff(COLOR_PAIR(1));
-			attron(COLOR_PAIR(3));
-			break;
-		}
-		err = move(1, 0);
-		if (err == ERR)
-		{
-			fprintf(stderr, "Erreur, move curseur\n");
-			ncurses_stopper();
-			exit(EXIT_FAILURE);
-		}
-		refresh();
-		printw(message);
-	}
-	ncurses_stopper();
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
