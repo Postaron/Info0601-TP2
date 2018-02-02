@@ -24,5 +24,4 @@ mrproper: clean
 
 # DO NOT DELETE THIS LINE
 
-main.o: ncurses.h
 ncurses.o: ncurses.h
