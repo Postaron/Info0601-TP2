@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Echec création de la fenêtre principale.\n");
 		exit(EXIT_FAILURE);
 	}
-	if ((jeu = subwin(fenetre, y, x, 2, 2)) == NULL)
+	if ((jeu = subwin(fenetre, y, x, (LINES - y) / 2, (COLS - x) / 2)) == NULL)
 	{
 		ncurses_stopper();
 		fprintf(stderr, "Echec de la création de la fenêtre de l'éditeur.\n");
@@ -49,13 +49,25 @@ int main(int argc, char *argv[])
 	scrollok(jeu, TRUE);
 	box(jeu, 0, 0);
 	printw(
-			"F1 pour l'aide, F2 pour quitter. F3 pour enregistrer pendant l'édition.\n\tJeu");
-	/*move(1, 1);*/
+			"F1 pour l'aide, F2 pour quitter. F3 pour enregistrer pendant l'édition.\n");
+	mvprintw(jeu->_begy - 1, jeu->_begx, "Jeu");
 	wrefresh(fenetre);
 	wrefresh(jeu);
 	map = creerMap((unsigned int) x, (unsigned int) y);
 	while ((carac = getch()) != KEY_F(2))
-		;
+	{
+		if ((carac == KEY_MOUSE) && (souris_getpos(&x, &y, NULL) == OK))
+		{
+			int begx = getbegx(jeu), begy = getbegy(jeu);
+			if (((begx <= x) && (x <= (begx + getmaxx(jeu))))
+					&& (((begy <= y) && (y <= (begy + getmaxy(jeu))))))
+			{
+				attron(COLOR_PAIR(3));
+				mvprintw(y, x, "X");
+			}
+			wrefresh(jeu);
+		}
+	}
 	if (fd == 0)
 		if ((fd = open(argv[1], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) == -1)
 		{
