@@ -3,8 +3,11 @@
 
 typedef struct{
 	int** map;
-	int sizeX;
-	int sizeY;
+	unsigned int sizeX;
+	unsigned int sizeY;
 } map_t;
+
+map_t* creerMap(unsigned int sizeX, unsigned int sizeY);
+void delMap(map_t* map);
 
 #endif /* MAP_H_ */
