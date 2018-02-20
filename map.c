@@ -12,7 +12,7 @@ map_t* creerMap(unsigned int sizeX, unsigned int sizeY)
 		fprintf(stderr, "Erreur allocation map\n");
 		exit(EXIT_FAILURE);
 	}
-	map->sizeX = sizeX, map->sizeY = sizeY;
+	map->sizeX = sizeX, map->sizeY = sizeY, map->nbrBomb = map->nbrTresor = 0;
 	if ((map->map = (int**) malloc(sizeof(int*) * sizeY)) == NULL)
 	{
 		fprintf(stderr, "Erreur allocation carte, lignes\n");
@@ -27,6 +27,30 @@ map_t* creerMap(unsigned int sizeX, unsigned int sizeY)
 		}
 	}
 	return map;
+}
+/* 1 = bombe présente, 0 aucune bombe. */
+void addBomb(int x, int y, map_t* map)
+{
+	map->map[x][y] = BOMB;
+	++map->nbrBomb;
+}
+
+void addTresor(int x, int y, map_t* map)
+{
+	map->map[x][y] = TRESOR;
+	++map->nbrTresor;
+}
+
+void delBomb(int x, int y, map_t* map)
+{
+	map->map[x][y] = 0;
+	--map->nbrBomb;
+}
+
+void delTresor(int x, int y, map_t* map)
+{
+	map->map[x][y] = 0;
+	--map->nbrTresor;
 }
 
 void delMap(map_t* map)
