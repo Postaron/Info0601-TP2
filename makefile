@@ -24,6 +24,7 @@ mrproper: clean
 
 # DO NOT DELETE THIS LINE
 
-main.o: map.h ncurses.h
+file.o: file.h map.h
+main.o: map.h file.h ncurses.h
 ncurses.o: ncurses.h
 map.o: map.h

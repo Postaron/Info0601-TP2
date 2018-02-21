@@ -31,25 +31,25 @@ map_t* creerMap(unsigned int sizeX, unsigned int sizeY)
 /* 1 = bombe présente, 0 aucune bombe. */
 void addBomb(int x, int y, map_t* map)
 {
-	map->map[x][y] = BOMB;
+	map->map[y][x] = BOMB;
 	++map->nbrBomb;
 }
 
 void addTresor(int x, int y, map_t* map)
 {
-	map->map[x][y] = TRESOR;
+	map->map[y][x] = TRESOR;
 	++map->nbrTresor;
 }
 
 void delBomb(int x, int y, map_t* map)
 {
-	map->map[x][y] = 0;
+	map->map[y][x] = 0;
 	--map->nbrBomb;
 }
 
 void delTresor(int x, int y, map_t* map)
 {
-	map->map[x][y] = 0;
+	map->map[y][x] = 0;
 	--map->nbrTresor;
 }
 

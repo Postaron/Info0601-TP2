@@ -1,5 +1,6 @@
 #ifndef MAP_H_
 #define MAP_H_
+
 #define BOMB 1
 #define TRESOR 2
 
@@ -8,8 +9,8 @@ typedef struct
 	int** map;
 	unsigned int sizeX;
 	unsigned int sizeY;
-	int nbrBomb;
-	int nbrTresor;
+	unsigned int nbrBomb;
+	unsigned int nbrTresor;
 } map_t;
 
 map_t* creerMap(unsigned int sizeX, unsigned int sizeY);

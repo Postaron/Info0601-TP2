@@ -6,27 +6,40 @@
 #include <ncurses.h>
 
 #include "map.h"
+#include "file.h"
 #include "ncurses.h"
 
 /* file_path x y */
 int main(int argc, char *argv[])
 {
-	int fd = 0, x, y, carac;
+	int x, y, carac, bouton;
 	WINDOW* fenetre = NULL, *jeu = NULL;
 	map_t* map = NULL;
-	if (argc != 4)
+	file_t* file = NULL;
+	if (argc == 4)
+	{
+		x = atoi(argv[2]), y = atoi(argv[3]);
+		file = openFile(argv[1]);
+		if (y > x)
+		{
+			int tmp = x;
+			x = y;
+			y = tmp;
+		}
+		map = creerMap((unsigned int) x, (unsigned int) y);
+	}
+	else if (argc == 1)
+	{
+		file = openFile(argv[1]);
+		loadMap(&map, file);
+	}
+	else
 	{
 		fprintf(stderr,
 				"Pas assez d'argument : un nom de fichier est nécessaire.\n");
 		exit(EXIT_FAILURE);
 	}
-	x = atoi(argv[2]), y = atoi(argv[3]);
-	if (y > x)
-	{
-		int tmp = x;
-		x = y;
-		y = tmp;
-	}
+
 	ncurses_initialiser(), ncurses_couleurs(), ncurses_souris();
 	if (LINES < (y + 3) || COLS < (x + 10))
 	{
@@ -49,39 +62,58 @@ int main(int argc, char *argv[])
 	scrollok(jeu, TRUE);
 	box(jeu, 0, 0);
 	printw(
-			"F1 pour l'aide, F2 pour quitter. F3 pour enregistrer pendant l'édition.\n");
-	mvprintw(jeu->_begy - 1, jeu->_begx, "Jeu");
+			"F1 pour l'aide, F2 pour quitter. F3 pour passer en mode suppression.\n");
+	mvprintw(getbegy(jeu) - 1, getbegx(jeu), "Jeu");
 	wrefresh(fenetre);
 	wrefresh(jeu);
-	map = creerMap((unsigned int) x, (unsigned int) y);
 	while ((carac = getch()) != KEY_F(2))
 	{
-		if ((carac == KEY_MOUSE) && (souris_getpos(&x, &y, NULL) == OK))
+		bool delete;
+		if (carac == KEY_F(3))
+			delete = true;
+		else
+			delete = false;
+		if ((carac == KEY_MOUSE) && (souris_getpos(&x, &y, &bouton) == OK))
 		{
 			int begx = getbegx(jeu), begy = getbegy(jeu);
-			if (((begx <= x) && (x <= (begx + getmaxx(jeu))))
-					&& (((begy <= y) && (y <= (begy + getmaxy(jeu))))))
-			{
-				attron(COLOR_PAIR(3));
-				mvprintw(y, x, "X");
-			}
+			if (bouton & BUTTON1_CLICKED)
+				if (((begx <= x) && (x <= (begx + getmaxx(jeu))))
+						&& (((begy <= y) && (y <= (begy + getmaxy(jeu))))))
+				{
+					if (delete)
+					{
+						mvdelch(y, x);
+						delBomb(x, y, map);
+					}
+					else
+					{
+						attron(COLOR_PAIR(2));
+						mvprintw(y, x, "X");
+						addBomb(x, y, map);
+					}
+				}
+			if (bouton & BUTTON2_CLICKED)
+				if (((begx <= x) && (x <= (begx + getmaxx(jeu))))
+						&& (((begy <= y) && (y <= (begy + getmaxy(jeu))))))
+				{
+					if (delete)
+					{
+						mvdelch(y, x);
+					}
+					else
+					{
+						attron(COLOR_PAIR(3));
+						mvprintw(y, x, "O");
+						addTresor(x, y, map);
+					}
+				}
 			wrefresh(jeu);
 		}
 	}
-	if (fd == 0)
-		if ((fd = open(argv[1], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR)) == -1)
-		{
-			ncurses_stopper();
-			perror("Erreur ouverture du fichier ");
-			exit(EXIT_FAILURE);
-		}
-	if (close(fd) == -1)
-	{
-		ncurses_stopper();
-		perror("Erreur lors de la fermeture du fichier ");
-		exit(EXIT_FAILURE);
-	}
+
+	writeMap(map, file);
 	delMap(map);
+	closeFile(file);
 	delwin(jeu);
 	delwin(fenetre);
 	ncurses_stopper();
