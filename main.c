@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 		}
 		map = creerMap((unsigned int) x, (unsigned int) y);
 	}
-	else if (argc == 1)
+	else if (argc == 2)
 	{
 		file = openFile(argv[1]);
 		loadMap(&map, file);
@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
 		{
 			int begx = getbegx(jeu), begy = getbegy(jeu);
 			if (bouton & BUTTON1_CLICKED)
+			{
 				if (((begx <= x) && (x <= (begx + getmaxx(jeu))))
 						&& (((begy <= y) && (y <= (begy + getmaxy(jeu))))))
 				{
@@ -87,12 +88,16 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
+						attroff(COLOR_PAIR(3));
 						attron(COLOR_PAIR(2));
 						mvprintw(y, x, "X");
+						x -= begx, y -= begy;
 						addBomb(x, y, map);
 					}
 				}
-			if (bouton & BUTTON2_CLICKED)
+			}
+			if (bouton & BUTTON3_CLICKED)
+			{
 				if (((begx <= x) && (x <= (begx + getmaxx(jeu))))
 						&& (((begy <= y) && (y <= (begy + getmaxy(jeu))))))
 				{
@@ -102,20 +107,22 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
+						attroff(COLOR_PAIR(2));
 						attron(COLOR_PAIR(3));
 						mvprintw(y, x, "O");
+						x -= begx, y -= begy;
 						addTresor(x, y, map);
 					}
 				}
+			}
 			wrefresh(jeu);
 		}
 	}
-
-	writeMap(map, file);
-	delMap(map);
-	closeFile(file);
 	delwin(jeu);
 	delwin(fenetre);
 	ncurses_stopper();
+	writeMap(map, file);
+	delMap(map);
+	closeFile(file);
 	return EXIT_SUCCESS;
 }

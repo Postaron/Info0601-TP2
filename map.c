@@ -12,7 +12,7 @@ map_t* creerMap(unsigned int sizeX, unsigned int sizeY)
 		fprintf(stderr, "Erreur allocation map\n");
 		exit(EXIT_FAILURE);
 	}
-	map->sizeX = sizeX, map->sizeY = sizeY, map->nbrBomb = map->nbrTresor = 0;
+	map->sizeX = sizeX, map->sizeY = sizeY, map->nbrBomb = 0, map->nbrTresor = 0;
 	if ((map->map = (int**) malloc(sizeof(int*) * sizeY)) == NULL)
 	{
 		fprintf(stderr, "Erreur allocation carte, lignes\n");
