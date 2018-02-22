@@ -91,20 +91,21 @@ void writeMap(map_t* map, file_t* file)
 
 void loadMap(map_t** map, file_t* file)
 {
-	unsigned char x, y, i;
+	unsigned char x, y, i, nbrBomb, nbrTresor;
 	checkIOFun(read(file->fd, (void*) &x, sizeof(unsigned char)));
 	checkIOFun(read(file->fd, (void*) &y, sizeof(unsigned char)));
 	*map = creerMap(x, y);
-	checkIOFun(read(file->fd, (unsigned char*) &(*map)->nbrBomb, sizeof(unsigned char)));
-	for (i = 0; i < (*map)->nbrBomb; ++i)
+	checkIOFun(read(file->fd, (void*) &nbrBomb, sizeof(unsigned char)));
+	for (i = 0; i < nbrBomb; ++i)
 	{
 		checkIOFun(read(file->fd, (void*) &y, sizeof(unsigned char)));
 		checkIOFun(read(file->fd, (void*) &x, sizeof(unsigned char)));
 		addBomb((signed) x, (signed) y, *map);
 	}
 	checkIOFun(
-			read(file->fd, (unsigned char*) &(*map)->nbrTresor, sizeof(unsigned char)));
-	for (i = 0; i < (*map)->nbrTresor; ++i)
+			read(file->fd, (void*) &nbrTresor,
+					sizeof(unsigned char)));
+	for (i = 0; i < nbrTresor; ++i)
 	{
 		checkIOFun(read(file->fd, (void*) &y, sizeof(unsigned char)));
 		checkIOFun(read(file->fd, (void*) &x, sizeof(unsigned char)));
@@ -112,7 +113,7 @@ void loadMap(map_t** map, file_t* file)
 	}
 	checkIOFun(
 			lseek(file->fd,
-					(off_t) ((*map)->nbrBomb * 2 + (*map)->nbrTresor * 2 + 4),
+					(off_t) (nbrBomb * 2 + nbrTresor * 2 + 4 + 2),
 					SEEK_END));
 }
 
