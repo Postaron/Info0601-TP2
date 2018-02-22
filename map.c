@@ -62,3 +62,27 @@ void delMap(map_t* map)
 	}
 	free(map);
 }
+
+void displayMap(WINDOW* fen, map_t* map)
+{
+	unsigned int i, j;
+	for (i = 0; i < map->sizeY; ++i)
+	{
+		for (j = 0; j < map->sizeX; ++j)
+		{
+			if (map->map[i][j] == BOMB)
+			{
+				attroff(COLOR_PAIR(3));
+				attron(COLOR_PAIR(2));
+				mvwprintw(fen, (signed) i, (signed) j, "X");
+			}
+			if (map->map[i][j] == TRESOR)
+			{
+				attroff(COLOR_PAIR(2));
+				attron(COLOR_PAIR(3));
+				mvwprintw(fen, (signed) i, (signed) j, "O");
+			}
+		}
+	}
+	wrefresh(fen);
+}
