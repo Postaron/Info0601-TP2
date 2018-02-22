@@ -1,14 +1,22 @@
 CC=gcc
-CFLAGS=-pipe -ansi -W -Wall -Wextra -Werror -Wconversion -Wpadded -pedantic -O3 -fmessage-length=0
-LDFLAGS=-pipe -O3
+CFLAGS=-pipe -ansi -W -Wall -Wextra -Werror -Wconversion -Wpadded -pedantic -fmessage-length=0
+LDFLAGS=-pipe
 LDLIBS=-lncurses
 SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
 EXEC=prog
+DEBUG=
+ifeq ($(DEBUG),yes)
+	CFLAGS += -g3
+	LDFLAGS += -g3
+else
+	CFLAGS += -O3
+	LDFLAGS += -O3
+endif
 
-.PHONY: clean mrproper
+.PHONY:	clean mrproper
 
-all: clean depend $(EXEC)
+all:	clean depend $(EXEC)
 
 $(EXEC):	$(OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)

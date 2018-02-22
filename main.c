@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
 	{
 		file = openFile(argv[1]);
 		loadMap(&map, file);
+		x = (signed) map->sizeX, y = (signed) map->sizeY;
 	}
 	else
 	{
@@ -66,6 +67,7 @@ int main(int argc, char *argv[])
 	mvprintw(getbegy(jeu) - 1, getbegx(jeu), "Jeu");
 	wrefresh(fenetre);
 	wrefresh(jeu);
+	displayMap(jeu, map);
 	while ((carac = getch()) != KEY_F(2))
 	{
 		bool delete;
